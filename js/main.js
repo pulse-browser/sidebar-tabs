@@ -32,6 +32,13 @@ async function addPage() {
               iconUrl: pageIcon,
               webviewUrl: tab.url,
             });
+
+            //save to storage
+            saveToStorage({
+              title: tab.title,
+              iconUrl: pageIcon,
+              webviewUrl: tab.url,
+            });
           });
         }
       });
@@ -41,29 +48,18 @@ async function addPage() {
 
 }
 
-async function saveToStorage(sidebaricon){
-  var sidebaricons = await browser.storage.local.get("sidebaricons");
-  if (!sidebaricons.sidebaricons) {
-    sidebaricons = {sidebaricons: []};
+async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl}) {
+  //save to sidebaritems
+  let sidebaritems = await browser.storage.local.get("sidebaritems");
+  if (sidebaritems.sidebaritems == undefined) {
+    sidebaritems.sidebaritems = [];
   }
-  sidebaricons.sidebaricons.push(sidebaricon);
-  browser.storage.local.set(sidebaricons);
-}
-
-async function recall() {
-  //get pages from storage and add them to sidebar
-  browser.storage.local.get("pages").then(function(pages) {
-    if (pages.pages) {
-        pages.pages.forEach(function(page) {
-            browser.sidebars.add({
-                title: page.url,
-                iconUrl: "icons/link.svg",
-                webviewUrl: page.url,
-            });
-        });
-    }
+  sidebaritems.sidebaritems.push({
+    title: title,
+    iconUrl: iconUrl,
+    webviewUrl: webviewUrl,
   });
+  browser.storage.local.set(sidebaritems);
 }
 
 document.getElementById("addPageButton").addEventListener("click", addPage);
-document.getElementById("recall").addEventListener("click", recall);
