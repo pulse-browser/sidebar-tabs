@@ -13,7 +13,6 @@ jobs:
     - uses: actions/checkout@master
     - name: Package
       run: |
-        cd ./src
         zip -9 -r -q ./release.zip ./*
         mv ./release.zip ../release.zip
         cd ..
