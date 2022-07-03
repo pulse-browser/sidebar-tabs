@@ -14,8 +14,6 @@ jobs:
     - name: Package
       run: |
         zip -9 -r -q ./release.zip ./*
-        mv ./release.zip ../release.zip
-        cd ..
     - name: Upload Release
       uses: ncipollo/release-action@v1
       with:
