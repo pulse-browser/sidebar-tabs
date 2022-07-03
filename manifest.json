@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "Pulse Sidebar Expansion",
+  "version": "1.0",
+  "description": "This extension adds a add page button to the sidebar for further sidebar customization utilizing the sidebar API.",
+  "permissions": [
+    "sidebars",
+    "storage",
+    "tabs",
+    "webRequest",
+    "activeTab",
+    "https://icons.duckduckgo.com/"
+
+  ],
+  "web_accessible_resources": [
+    "icon.svg",
+    "index.html",
+    "page.html"
+  ],
+  "background": {
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "applications": {
+    "gecko": {
+      "id": "sidebartabs@browser.fushra.com"
+    }
+  },
+  "icons": {
+    "48": "full.svg"
+  }
+}
