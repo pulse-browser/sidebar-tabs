@@ -13,7 +13,7 @@ async function addPage() {
     //fetch https://icons.duckduckgo.com/ip3 image for icon
     var response = await fetch(`https://icons.duckduckgo.com/ip3/${pageURL}.ico`);
     if (response.ok) {
-      //create sidebar item
+      //Update pageIcon with the fetched icon
       pageIcon = ('https://icons.duckduckgo.com/ip3/'+pageURL+'.ico')
     }
   }
@@ -23,14 +23,12 @@ async function addPage() {
     let newtab = browser.tabs.create({ url: "https://"+pageURL, active: true});
     //newtab await complete load
     newtab.then(function(tab) {
-      //wait for complete load
       browser.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
         if (tabId == tab.id && changeInfo.status == "complete") {
           //remove listener
           browser.tabs.onUpdated.removeListener(listener);
-          //get tab title
           browser.tabs.get(tab.id).then(function(tab) {
-            //create new sidebar
+            //create new sidebar item
             browser.sidebars.add({
               title: tab.title,
               iconUrl: pageIcon,
