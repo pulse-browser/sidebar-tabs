@@ -49,6 +49,16 @@ async function addPage() {
     });
  
   }
+  else
+  {
+    //If the user is offline, create a sidebar item with the title as the url 
+    //and the icon as the default icon so the browser sidebar is functional offline
+    browser.sidebars.add({
+      title: pageURL,
+      iconUrl: pageIcon,
+      webviewUrl: pageURL,
+    });
+  }
 
 }
 
