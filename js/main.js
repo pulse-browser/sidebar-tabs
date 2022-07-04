@@ -1,5 +1,9 @@
 async function addPage() {
   var pageURL = (document.getElementById("url").value);
+  if (!pageURL) {
+    return;
+  }
+
   // remove https:// or http:// from the url
   pageURL = pageURL.replace(/^https?:\/\//, '');
 
