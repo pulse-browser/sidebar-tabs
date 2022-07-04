@@ -3,7 +3,7 @@ async function addPage() {
   // remove https:// or http:// from the url
   pageURL = pageURL.replace(/^https?:\/\//, '');
 
-  let pageIcon = "icons/link.svg";
+  let pageIcon = "chrome://global/skin/icons/link.svg";
 
   if (navigator.onLine) {
     //fetch https://icons.duckduckgo.com/ip3 image for icon

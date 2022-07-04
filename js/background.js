@@ -1,6 +1,6 @@
 browser.sidebars.add({
     title: "Add Button",
-    iconUrl: "icons/plus.svg",
+    iconUrl: "chrome://global/skin/icons/plus.svg",
     webviewUrl: "index.html",
     isBottom: true,
 })
