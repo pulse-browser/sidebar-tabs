@@ -1,0 +1,45 @@
+/* This was stolen from firefox and is under MPL 2.0" */
+
+#instructions {
+    text-align: center;
+    font-size: 12px;
+    padding: 0 11px;
+    max-width: 15em;
+    margin: 0 auto;
+}
+
+#url {
+    display: block;
+    padding: 4px;
+    font-size: 14px;
+    width: calc(100% - 22px);
+    max-width: 195px;
+    border: 1px solid #ccc;
+    resize: none;
+    margin: 0 auto;
+}
+
+/* id addPageButton with color of #0060df  and font-size of 1.5em */
+#addPageButton {
+    display: block;
+    background-color: #0060df;
+    color: white;
+    border: 0;
+    border-radius: 2px;
+    margin: 15px auto;
+    padding: 8px;
+    text-shadow: none;
+    width: calc(100% - 22px);
+    max-width: 200px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+/* addPageButton hover */
+#addPageButton:hover {
+    background-color: #003eaa;
+}
+  
+#addPageButton:hover:active {
+    background-color: #002275;
+}
