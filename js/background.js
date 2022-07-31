@@ -22,3 +22,7 @@ async function getFromStorage() {
     });
     }
 }
+
+browser.sidebars.onRemove.addListener((itemId) => {
+    console.log(itemId);
+})
