@@ -29,17 +29,17 @@ async function addPage() {
           browser.tabs.onUpdated.removeListener(listener);
           browser.tabs.get(tab.id).then(function(tab) {
             //create new sidebar item
-            browser.sidebars.add({
+            var item = browser.sidebars.add({
               title: tab.title,
               iconUrl: pageIcon,
-              webviewUrl: tab.url,
+              webviewUrl: tab.url
             });
-
             //save to storage
             saveToStorage({
               title: tab.title,
               iconUrl: pageIcon,
               webviewUrl: tab.url,
+              iconindex: item
             });
           });
         }
@@ -54,13 +54,14 @@ async function addPage() {
     browser.sidebars.add({
       title: pageURL,
       iconUrl: pageIcon,
-      webviewUrl: pageURL,
+      webviewUrl: pageURL
     });
+    
   }
 
 }
 
-async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl}) {
+async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl, iconindex: iconindex}) {
   //save to sidebaritems
   let sidebaritems = await browser.storage.local.get("sidebaritems");
   if (sidebaritems.sidebaritems == undefined) {
@@ -70,6 +71,7 @@ async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webvie
     title: title,
     iconUrl: iconUrl,
     webviewUrl: webviewUrl,
+    iconindex: iconindex
   });
   browser.storage.local.set(sidebaritems);
 }
