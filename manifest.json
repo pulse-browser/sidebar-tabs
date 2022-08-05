@@ -28,6 +28,6 @@
     }
   },
   "icons": {
-    "48": "icon.svg"
+    "48": "./icons/plus.svg"
   }
 }
