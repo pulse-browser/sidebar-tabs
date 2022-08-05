@@ -37,9 +37,40 @@ async function removeFromStorage(index) {
         break;
     }
     }
+}
 
+async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl, iconindex: iconindex}) {
+    console.log("saveToStorage");
+    //save to sidebaritems
+    let sidebaritems = await browser.storage.local.get("sidebaritems");
+    if (sidebaritems.sidebaritems == undefined) {
+      sidebaritems.sidebaritems = [];
+    }
+    sidebaritems.sidebaritems.push({
+      title: title,
+      iconUrl: iconUrl,
+      webviewUrl: webviewUrl,
+      iconindex: iconindex
+    });
+    browser.storage.local.set(sidebaritems);
 }
 
 browser.sidebars.onRemove.addListener((itemId) => {
     removeFromStorage(itemId);
 })
+
+function connectionManager(port) {
+    port.onMessage.addListener(async (message) => {
+        if (message.type == "saveToStorage") {
+            saveToStorage({
+                title: message.title,
+                iconUrl: message.pageIcon,
+                webviewUrl: message.webviewUrl,
+                iconindex: message.iconindex
+            });
+        }
+    }
+    
+)};
+
+browser.runtime.onConnect.addListener(connectionManager);

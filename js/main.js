@@ -1,3 +1,6 @@
+//connect to runtime and hold it in a variable
+var backgroundport = browser.runtime.connect();
+
 async function addPage() {
   var pageURL = (document.getElementById("url").value);
   if (!pageURL) {
@@ -34,12 +37,14 @@ async function addPage() {
               iconUrl: pageIcon,
               webviewUrl: tab.url
             });
-            //save to storage
-            saveToStorage({
+            
+            //send message on runtime port
+            backgroundport.postMessage({
+              type: "saveToStorage",
               title: tab.title,
               iconUrl: pageIcon,
               webviewUrl: tab.url,
-              iconindex: item
+              iconindex: item.iconindex
             });
           });
         }
@@ -59,21 +64,6 @@ async function addPage() {
     
   }
 
-}
-
-async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl, iconindex: iconindex}) {
-  //save to sidebaritems
-  let sidebaritems = await browser.storage.local.get("sidebaritems");
-  if (sidebaritems.sidebaritems == undefined) {
-    sidebaritems.sidebaritems = [];
-  }
-  sidebaritems.sidebaritems.push({
-    title: title,
-    iconUrl: iconUrl,
-    webviewUrl: webviewUrl,
-    iconindex: iconindex
-  });
-  browser.storage.local.set(sidebaritems);
 }
 
 document.getElementById("addPageButton").addEventListener("click", addPage);
