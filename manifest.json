@@ -14,6 +14,7 @@
   ],
   "web_accessible_resources": [
     "icon.svg",
+    "plus.svg",
     "index.html",
     "page.html"
   ],
