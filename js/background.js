@@ -1,5 +1,5 @@
 browser.sidebars.add({
-    title: "Add Button",
+    title: "Add Shortcut to Sidebar",
     iconUrl: "plus.svg",
     webviewUrl: "index.html",
     isBottom: true,
