@@ -1,2 +1,2 @@
 # sidebar-tabs
-Sidebar tabs expansion extension for Pulse Browser Sidebar API
+An add-on for Pulse Browser that lets you save pages directly from the sidebar tabs. This add-on was developed solely for Pulse Browser and makes use of its specific APIs. 
