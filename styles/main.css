@@ -5,10 +5,10 @@ button {
     padding-inline: 8px;
     font-size: 13px;
     font-weight: 132px;
-    width: auto;
     background-color: #0060df;
     color: #fff;
     border: none;
+    width: 217px;
 
 }
 
@@ -18,18 +18,29 @@ input {
     padding-inline: 8px;
     font-size: 13px;
     font-weight: 132px;
-    width: auto;
     background-color: #fff;
     color: #000;
     border: none;
+    width: 200px;
 }
+
+#instructions{
+    font-size: 14px;
+    font-weight: 132px;
+    width: 200px;
+}
+
 
 /* if prefers-color-scheme theme body have dark background white text */
 @media (prefers-color-scheme: dark) {
     body {
-      background-color: #2a2a2e;
-      color: #fff;
-      padding: 16px;
+        background-color: #2a2a2e;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
     }
 }
   
@@ -38,5 +49,10 @@ input {
     body {
         background-color: #fff;
         color: #2a2a2e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
     }
 }
