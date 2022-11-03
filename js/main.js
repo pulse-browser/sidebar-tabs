@@ -34,13 +34,12 @@ async function addPage() {
               iconUrl: pageIcon,
               webviewUrl: tab.url,
             });
-
-            //save to storage
-            saveToStorage({
-              title: tab.title,
-              iconUrl: pageIcon,
-              webviewUrl: tab.url,
-            });
+          });
+          //save to storage
+          saveToStorage({
+            title: tab.title,
+            iconUrl: pageIcon,
+            webviewUrl: tab.url,
           });
         }
       });
@@ -56,6 +55,13 @@ async function addPage() {
       iconUrl: pageIcon,
       webviewUrl: pageURL,
     });
+
+    //save to storage
+    saveToStorage({
+      title: tab.title,
+      iconUrl: pageIcon,
+      webviewUrl: pageURL,
+    });
   }
 
 }
@@ -66,7 +72,12 @@ async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webvie
   if (sidebaritems.sidebaritems == undefined) {
     sidebaritems.sidebaritems = [];
   }
+
+  //get size of sidebaritems
+  let size = sidebaritems.sidebaritems.length;
+
   sidebaritems.sidebaritems.push({
+    id: size-1,
     title: title,
     iconUrl: iconUrl,
     webviewUrl: webviewUrl,
