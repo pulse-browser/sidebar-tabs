@@ -75,9 +75,8 @@ async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webvie
 
   //get size of sidebaritems
   let size = sidebaritems.sidebaritems.length;
-
   sidebaritems.sidebaritems.push({
-    id: size-1,
+    id: size,
     title: title,
     iconUrl: iconUrl,
     webviewUrl: webviewUrl,
