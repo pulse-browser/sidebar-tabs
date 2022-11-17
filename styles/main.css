@@ -1,4 +1,29 @@
 /* This was stolen from firefox and is under MPL 2.0" */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 13px;
+    gap: 12px;
+}
+
+/* 
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #2a2a2e;
+        color: #cccccc;
+    }
+}
+  
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #fff;
+        color: #2a2a2e;
+    }
+} */
+
+
 button {
     height: 32px;
     border-radius: 2px;
@@ -11,11 +36,7 @@ button {
     width: 217px;
 }
 
-button:hover {
-    background-color: #0047b3;
-}
-
-input {
+#url {
     height: 32px;
     border-radius: 2px;
     padding-inline: 8px;
@@ -28,34 +49,8 @@ input {
 }
 
 #instructions{
-    font-size: 14px;
-    font-weight: 132px;
-    width: 200px;
-}
-
-
-/* if prefers-color-scheme theme body have dark background white text */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #2a2a2e;
-        color: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 8px;
-    }
-}
-  
-/* if prefers-color-scheme light */
-@media (prefers-color-scheme: light) {
-    body {
-        background-color: #fff;
-        color: #2a2a2e;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 8px;
-    }
+    text-align: center;
+    padding: 0 11px;
+    max-width: 15em;
+    margin: 0 auto;
 }
