@@ -99,7 +99,7 @@ document.getElementById("addPageButton").addEventListener("click", addPage);
 
 
 
-
+//Stolen from https://github.com/mdn/webextensions-examples
 function setSidebarStyle(theme) {
   const body = document.body;
 
