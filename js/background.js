@@ -10,36 +10,36 @@ getFromStorage().then(createSidebarItems);
 async function getFromStorage() {
     //get from storage
     let sidebaritems = await browser.storage.local.get("sidebaritems");
-    console.log(sidebaritems);
     return sidebaritems;
 }
 
 async function createSidebarItems(sidebaritems) {
-    //create sidebar items
+    if (sidebaritems.sidebaritems == undefined) {
+        sidebaritems.sidebaritems = [];
+    }
+    
     for (let i = 0; i < sidebaritems.sidebaritems.length; i++) {
-        browser.sidebars.add({
+        var item = await browser.sidebars.add({
             title: sidebaritems.sidebaritems[i].title,
             iconUrl: sidebaritems.sidebaritems[i].iconUrl,
             webviewUrl: sidebaritems.sidebaritems[i].webviewUrl,
         });
+        sidebaritems.sidebaritems[i].id = item;
     }
+
+    await browser.storage.local.set(sidebaritems);
 }
 
 async function removeSidebarItems(itemId)
 {
-    const item = await browser.sidebars.get(itemId);
-
-    //remove from storage
     let storagearray = await getFromStorage();
-    let storageitems = storagearray.sidebaritems;
-
-    for (let i = 0; i < storageitems.length; i++) {
-        if (storageitems[i].webviewUrl == item.webviewUrl) {
-            storageitems.splice(i, 1);
+    for (let i = 0; i < storagearray.sidebaritems.length; i++) {
+        if (storagearray.sidebaritems[i].id == itemId) {
+            storagearray.sidebaritems.splice(i, 1);
         }
     }
 
-    browser.storage.local.set(storagearray);
+    await browser.storage.local.set(storagearray);
 }
 
 browser.sidebars.onRemove.addListener((itemId) => {
