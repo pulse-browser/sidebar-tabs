@@ -1,3 +1,4 @@
+import { MessageTypeValues } from './message.js'
 import { Mutex } from './mutex.js'
 
 // =============================================================================
@@ -13,6 +14,17 @@ import { Mutex } from './mutex.js'
  * @property {string} webviewUrl The url of the website to navigate to
  */
 
+/**
+ * This is an incomplete version of {@link SidebarItem} intended for sending
+ * creation data around with. Currently it only excludes `id`.
+ *
+ * @typedef {object} SidebarItemData
+ *
+ * @property {string} title The title of the sidebar item, generally the webpage title
+ * @property {string} iconUrl The website's favicon
+ * @property {string} webviewUrl The url of the website to navigate to
+ */
+
 // =============================================================================
 // Functions
 
@@ -20,17 +32,15 @@ const storageMutex = new Mutex()
 
 /**
  * @returns {Promise<{ sidebaritems: SidebarItem[] }>}
+ *
+ * @note We assume that the parent caller has already locked {@see storageMutex} to avoid a race condition
  */
 async function getFromStorage() {
-  const { unlock } = await storageMutex.lock()
-
   const storage = await browser.storage.local.get('sidebaritems')
-
-  unlock()
   return storage
 }
 
-async function spawnExistingSidebarItems(storage) {
+async function spawnExistingSidebarItems() {
   const { unlock } = await storageMutex.lock()
   let { sidebaritems: sidebarItems } = await getFromStorage()
 
@@ -65,6 +75,23 @@ async function removeSidebarItems(idToRemove) {
   unlock()
 }
 
+/**
+ * Creates a sidebar item and registers it, storing it for future browser
+ * instances
+ *
+ * @param {SidebarItemData} itemInfo Information about the sidebar to be created
+ */
+async function createSidebarItem(itemInfo) {
+  const { unlock } = await storageMutex.lock()
+  const storage = await getFromStorage()
+
+  const id = await browser.sidebars.add(itemInfo)
+  storage.sidebaritems.push({ ...itemInfo, id })
+
+  await browser.storage.local.set(storage)
+  unlock()
+}
+
 // =============================================================================
 // Init logic
 
@@ -75,6 +102,22 @@ browser.sidebars.add({
   isBottom: true,
 })
 
-getFromStorage().then(spawnExistingSidebarItems)
+spawnExistingSidebarItems()
 
 browser.sidebars.onRemove.addListener((itemId) => removeSidebarItems(itemId))
+
+// =============================================================================
+// Messages from UI
+
+browser.runtime.onMessage.addListener(({ type, data }, sender) => {
+  switch (type) {
+    case MessageTypeValues.CREATE_SIDEBAR_ITEMS:
+      createSidebarItem(data)
+      break
+
+    default:
+      throw new Error(`Unknown message type: ${type}`)
+  }
+
+  return null
+})
