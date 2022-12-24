@@ -1,3 +1,5 @@
+import { Mutex } from './mutex.js'
+
 // =============================================================================
 // Types
 // @ts-check
@@ -14,18 +16,23 @@
 // =============================================================================
 // Functions
 
+const storageMutex = new Mutex()
+
 /**
  * @returns {Promise<{ sidebaritems: SidebarItem[] }>}
  */
 async function getFromStorage() {
-  return await browser.storage.local.get('sidebaritems')
+  const { unlock } = await storageMutex.lock()
+
+  const storage = await browser.storage.local.get('sidebaritems')
+
+  unlock()
+  return storage
 }
 
-/**
- * @param {{sidebaritems: SidebarItem[]}} storage
- */
 async function spawnExistingSidebarItems(storage) {
-  let { sidebaritems: sidebarItems } = storage
+  const { unlock } = await storageMutex.lock()
+  let { sidebaritems: sidebarItems } = await getFromStorage()
 
   if (typeof sidebarItems === 'undefined') {
     sidebarItems = []
@@ -40,12 +47,14 @@ async function spawnExistingSidebarItems(storage) {
 
   storage.sidebaritems = sidebarItems
   await browser.storage.local.set(storage)
+  unlock()
 }
 
 /**
  * @param {number} idToRemove The id of the sidebar item you wish to remove
  */
 async function removeSidebarItems(idToRemove) {
+  const { unlock } = await storageMutex.lock()
   let storage = await getFromStorage()
 
   storage.sidebaritems = storage.sidebaritems.filter(
@@ -53,6 +62,7 @@ async function removeSidebarItems(idToRemove) {
   )
 
   await browser.storage.local.set(storage)
+  unlock()
 }
 
 // =============================================================================
