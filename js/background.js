@@ -1,47 +1,70 @@
-browser.sidebars.add({
-    title: "Add Shortcut to Sidebar",
-    iconUrl: "plus.svg",
-    webviewUrl: "index.html",
-    isBottom: true,
-})
+// =============================================================================
+// Types
+// @ts-check
 
-getFromStorage().then(createSidebarItems);
+/**
+ * @typedef {object} SidebarItem
+ *
+ * @property {number} id The id of this specific sidebar item. Valid for a browser session
+ * @property {string} title The title of the sidebar item, generally the webpage title
+ * @property {string} iconUrl The website's favicon
+ * @property {string} webviewUrl The url of the website to navigate to
+ */
 
+// =============================================================================
+// Functions
+
+/**
+ * @returns {Promise<{ sidebaritems: SidebarItem[] }>}
+ */
 async function getFromStorage() {
-    //get from storage
-    let sidebaritems = await browser.storage.local.get("sidebaritems");
-    return sidebaritems;
+  return await browser.storage.local.get('sidebaritems')
 }
 
-async function createSidebarItems(sidebaritems) {
-    if (sidebaritems.sidebaritems == undefined) {
-        sidebaritems.sidebaritems = [];
-    }
-    
-    for (let i = 0; i < sidebaritems.sidebaritems.length; i++) {
-        var item = await browser.sidebars.add({
-            title: sidebaritems.sidebaritems[i].title,
-            iconUrl: sidebaritems.sidebaritems[i].iconUrl,
-            webviewUrl: sidebaritems.sidebaritems[i].webviewUrl,
-        });
-        sidebaritems.sidebaritems[i].id = item;
-    }
+/**
+ * @param {{sidebaritems: SidebarItem[]}} storage
+ */
+async function spawnExistingSidebarItems(storage) {
+  let { sidebaritems: sidebarItems } = storage
 
-    await browser.storage.local.set(sidebaritems);
+  if (typeof sidebarItems === 'undefined') {
+    sidebarItems = []
+  }
+
+  for (let i = 0; i < sidebarItems.length; i++) {
+    const item = sidebarItems[i]
+    const id = await browser.sidebars.add(item)
+
+    sidebarItems[i].id = id
+  }
+
+  storage.sidebaritems = sidebarItems
+  await browser.storage.local.set(storage)
 }
 
-async function removeSidebarItems(itemId)
-{
-    let storagearray = await getFromStorage();
-    for (let i = 0; i < storagearray.sidebaritems.length; i++) {
-        if (storagearray.sidebaritems[i].id == itemId) {
-            storagearray.sidebaritems.splice(i, 1);
-        }
-    }
+/**
+ * @param {number} idToRemove The id of the sidebar item you wish to remove
+ */
+async function removeSidebarItems(idToRemove) {
+  let storage = await getFromStorage()
 
-    await browser.storage.local.set(storagearray);
+  storage.sidebaritems = storage.sidebaritems.filter(
+    (item) => item.id !== idToRemove
+  )
+
+  await browser.storage.local.set(storage)
 }
 
-browser.sidebars.onRemove.addListener((itemId) => {
-    removeSidebarItems(itemId);
+// =============================================================================
+// Init logic
+
+browser.sidebars.add({
+  title: 'Add Shortcut to Sidebar',
+  iconUrl: 'plus.svg',
+  webviewUrl: 'index.html',
+  isBottom: true,
 })
+
+getFromStorage().then(spawnExistingSidebarItems)
+
+browser.sidebars.onRemove.addListener((itemId) => removeSidebarItems(itemId))
