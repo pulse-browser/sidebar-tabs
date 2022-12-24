@@ -1,77 +1,105 @@
+// @ts-check
+import { MessageTypeValues } from './message.js'
+
+/**
+ * Send a message to the background page to be processed
+ * @param {import("./message").MessageType} type
+ * @param {*} data
+ */
+async function sendMessageToBackgroundScript(type, data) {
+  return await browser.runtime.sendMessage({ type, data })
+}
+
+async function createSidebarItem(title, iconUrl, webviewUrl) {
+  await sendMessageToBackgroundScript(MessageTypeValues.CREATE_SIDEBAR_ITEMS, {
+    title,
+    iconUrl,
+    webviewUrl,
+  })
+}
+
 async function addPage() {
-  var pageURL = (document.getElementById("url").value);
-  if (!pageURL) {
-    return;
+  /** @type {HTMLInputElement?} */
+  // @ts-ignore
+  const pageUrlElement = document.getElementById('url')
+
+  if (!pageUrlElement) {
+    throw new Error('Could not find the URL element')
   }
 
-  // remove https:// or http:// from the url
-  pageURL = pageURL.replace(/^https?:\/\//, '');
+  const pageUrl = pageUrlElement.value.replace(/^https?:\/\//, '')
+  let pageIcon = 'chrome://global/skin/icons/link.svg'
 
-  let pageIcon = "chrome://global/skin/icons/link.svg";
+  if (!navigator.onLine) {
+    createSidebarItem(pageUrl, pageIcon, 'https://' + pageUrl)
+    return
+  }
 
-  if (navigator.onLine) {
-    //fetch https://icons.duckduckgo.com/ip3 image for icon
-    var response = await fetch(`https://icons.duckduckgo.com/ip3/${pageURL}.ico`);
-    if (response.ok) {
-      //Update pageIcon with the fetched icon
-      pageIcon = ('https://icons.duckduckgo.com/ip3/'+pageURL+'.ico')
+  const response = await fetch(
+    `https://icons.duckduckgo.com/ip3/${pageUrl}.ico`
+  )
+  if (response.ok) {
+    pageIcon = `https://icons.duckduckgo.com/ip3/${pageUrl}.ico`
+  }
+
+  const tab = await browser.tabs.create({
+    url: 'https://' + pageUrl,
+    active: true,
+  })
+
+  browser.tabs.onUpdated.addListener(async function listener(
+    tabId,
+    changeInfo,
+    tab
+  ) {
+    if (tabId == tab.id && changeInfo.status == 'complete') {
+      browser.tabs.onUpdated.removeListener(listener)
+      createSidebarItem(tab.title, pageIcon, tab.url)
     }
-  }
-
-  if (navigator.onLine) {
-    //create new tab
-    let newtab = browser.tabs.create({ url: "https://"+pageURL, active: true});
-    //newtab await complete load
-    newtab.then(function(tab) {
-      browser.tabs.onUpdated.addListener(function listener(tabId, changeInfo, tab) {
-        if (tabId == tab.id && changeInfo.status == "complete") {
-          //remove listener
-          browser.tabs.onUpdated.removeListener(listener);
-          browser.tabs.get(tab.id).then(function(tab) {
-            //create new sidebar item
-            browser.sidebars.add({
-              title: tab.title,
-              iconUrl: pageIcon,
-              webviewUrl: tab.url,
-            });
-
-            //save to storage
-            saveToStorage({
-              title: tab.title,
-              iconUrl: pageIcon,
-              webviewUrl: tab.url,
-            });
-          });
-        }
-      });
-    });
- 
-  }
-  else
-  {
-    //If the user is offline, create a sidebar item with the title as the url 
-    //and the icon as the default icon so the browser sidebar is functional offline
-    browser.sidebars.add({
-      title: pageURL,
-      iconUrl: pageIcon,
-      webviewUrl: pageURL,
-    });
-  }
-
+  })
 }
 
-async function saveToStorage({title: title, iconUrl: iconUrl, webviewUrl: webviewUrl}) {
-  //save to sidebaritems
-  let sidebaritems = await browser.storage.local.get("sidebaritems");
-  if (sidebaritems.sidebaritems == undefined) {
-    sidebaritems.sidebaritems = [];
+document.getElementById('addPageButton').addEventListener('click', addPage)
+
+//Stolen from https://github.com/mdn/webextensions-examples
+function setSidebarStyle(theme) {
+  const body = document.body
+
+  if (theme.colors && theme.colors.frame) {
+    body.style.backgroundColor = theme.colors.frame
+  } else {
+    body.style.backgroundColor = 'white'
   }
-  sidebaritems.sidebaritems.push({
-    title: title,
-    iconUrl: iconUrl,
-    webviewUrl: webviewUrl,
-  });
-  browser.storage.local.set(sidebaritems);
+
+  if (theme.colors && theme.colors.toolbar) {
+    body.style.backgroundColor = theme.colors.toolbar
+  } else {
+    body.style.backgroundColor = '#ebebeb'
+  }
+
+  if (theme.colors && theme.colors.toolbar_text) {
+    body.style.color = theme.colors.toolbar_text
+  } else {
+    body.style.color = 'black'
+  }
 }
 
-document.getElementById("addPageButton").addEventListener("click", addPage);
+// Set the element style when the extension page loads
+async function setInitialStyle() {
+  const theme = await browser.theme.getCurrent()
+  setSidebarStyle(theme)
+}
+setInitialStyle()
+
+// Watch for theme updates
+browser.theme.onUpdated.addListener(async ({ theme, windowId }) => {
+  const sidebarWindow = await browser.windows.getCurrent()
+  /*
+    Only update theme if it applies to the window the sidebar is in.
+    If a windowId is passed during an update, it means that the theme is applied to that specific window.
+    Otherwise, the theme is applied globally to all windows.
+  */
+  if (!windowId || windowId == sidebarWindow.id) {
+    setSidebarStyle(theme)
+  }
+})

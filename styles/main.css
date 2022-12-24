@@ -1,45 +1,56 @@
 /* This was stolen from firefox and is under MPL 2.0" */
-
-#instructions {
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    font-size: 12px;
-    padding: 0 11px;
-    max-width: 15em;
-    margin: 0 auto;
+    font-size: 13px;
+    gap: 12px;
+}
+
+/* 
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #2a2a2e;
+        color: #cccccc;
+    }
+}
+  
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: #fff;
+        color: #2a2a2e;
+    }
+} */
+
+
+button {
+    height: 32px;
+    border-radius: 2px;
+    padding-inline: 8px;
+    font-size: 13px;
+    font-weight: 132px;
+    background-color: #0060df;
+    color: #fff;
+    border: none;
+    width: 217px;
 }
 
 #url {
-    display: block;
-    padding: 4px;
-    font-size: 14px;
-    width: calc(100% - 22px);
-    max-width: 195px;
-    border: 1px solid #ccc;
-    resize: none;
-    margin: 0 auto;
+    height: 32px;
+    border-radius: 2px;
+    padding-inline: 8px;
+    font-size: 13px;
+    font-weight: 132px;
+    background-color: #fff;
+    color: #000;
+    border: none;
+    width: 200px;
 }
 
-/* id addPageButton with color of #0060df  and font-size of 1.5em */
-#addPageButton {
-    display: block;
-    background-color: #0060df;
-    color: white;
-    border: 0;
-    border-radius: 2px;
-    margin: 15px auto;
-    padding: 8px;
-    text-shadow: none;
-    width: calc(100% - 22px);
-    max-width: 200px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-}
-/* addPageButton hover */
-#addPageButton:hover {
-    background-color: #003eaa;
-}
-  
-#addPageButton:hover:active {
-    background-color: #002275;
+#instructions{
+    text-align: center;
+    padding: 0 11px;
+    max-width: 15em;
+    margin: 0 auto;
 }
