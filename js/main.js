@@ -1,3 +1,4 @@
+// @ts-check
 import { MessageTypeValues } from './message.js'
 
 /**
@@ -18,43 +19,44 @@ async function createSidebarItem(title, iconUrl, webviewUrl) {
 }
 
 async function addPage() {
-  var pageURL = document.getElementById('url').value
-  if (!pageURL) {
-    return
-  }
-  pageURL = pageURL.replace(/^https?:\/\//, '')
-  let pageIcon = 'chrome://global/skin/icons/link.svg'
-  if (navigator.onLine) {
-    var response = await fetch(
-      `https://icons.duckduckgo.com/ip3/${pageURL}.ico`
-    )
-    if (response.ok) {
-      pageIcon = 'https://icons.duckduckgo.com/ip3/' + pageURL + '.ico'
-    }
+  /** @type {HTMLInputElement?} */
+  // @ts-ignore
+  const pageUrlElement = document.getElementById('url')
+
+  if (!pageUrlElement) {
+    throw new Error('Could not find the URL element')
   }
 
-  if (navigator.onLine) {
-    let newtab = browser.tabs.create({
-      url: 'https://' + pageURL,
-      active: true,
-    })
-    newtab.then(function (tab) {
-      browser.tabs.onUpdated.addListener(function listener(
-        tabId,
-        changeInfo,
-        tab
-      ) {
-        if (tabId == tab.id && changeInfo.status == 'complete') {
-          browser.tabs.onUpdated.removeListener(listener)
-          browser.tabs.get(tab.id).then(function (tab) {
-            createSidebarItem(tab.title, pageIcon, tab.url)
-          })
-        }
-      })
-    })
-  } else {
-    createSidebarItem(pageURL, pageIcon, 'https://' + page)
+  const pageUrl = pageUrlElement.value.replace(/^https?:\/\//, '')
+  let pageIcon = 'chrome://global/skin/icons/link.svg'
+
+  if (!navigator.onLine) {
+    createSidebarItem(pageUrl, pageIcon, 'https://' + pageUrl)
+    return
   }
+
+  const response = await fetch(
+    `https://icons.duckduckgo.com/ip3/${pageUrl}.ico`
+  )
+  if (response.ok) {
+    pageIcon = `https://icons.duckduckgo.com/ip3/${pageUrl}.ico`
+  }
+
+  const tab = await browser.tabs.create({
+    url: 'https://' + pageUrl,
+    active: true,
+  })
+
+  browser.tabs.onUpdated.addListener(async function listener(
+    tabId,
+    changeInfo,
+    tab
+  ) {
+    if (tabId == tab.id && changeInfo.status == 'complete') {
+      browser.tabs.onUpdated.removeListener(listener)
+      createSidebarItem(tab.title, pageIcon, tab.url)
+    }
+  })
 }
 
 document.getElementById('addPageButton').addEventListener('click', addPage)
