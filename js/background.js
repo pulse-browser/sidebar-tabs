@@ -42,7 +42,8 @@ async function getFromStorage() {
 
 async function spawnExistingSidebarItems() {
   const { unlock } = await storageMutex.lock()
-  let { sidebaritems: sidebarItems } = await getFromStorage()
+  let storage = await getFromStorage()
+  let { sidebaritems: sidebarItems } = storage
 
   if (typeof sidebarItems === 'undefined') {
     sidebarItems = []

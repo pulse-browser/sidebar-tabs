@@ -1,4 +1,4 @@
-import { MessageTypeValues } from './message'
+import { MessageTypeValues } from './message.js'
 
 /**
  * Send a message to the background page to be processed
