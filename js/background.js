@@ -51,7 +51,12 @@ async function spawnExistingSidebarItems() {
 
   for (let i = 0; i < sidebarItems.length; i++) {
     const item = sidebarItems[i]
-    const id = await browser.sidebars.add(item)
+    // One time use, so no need to create a new type
+    const id = await browser.sidebars.add({
+      title: item.title,
+      iconUrl: item.iconUrl,
+      webviewUrl: item.webviewUrl,
+    })
 
     sidebarItems[i].id = id
   }
