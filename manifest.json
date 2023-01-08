@@ -10,7 +10,10 @@
     "tabs",
     "webRequest",
     "activeTab",
-    "https://icons.duckduckgo.com/"
+    "https://icons.duckduckgo.com/",
+    "menus",
+    "<all_urls>",
+    "contextMenus"
   ],
   "web_accessible_resources": [
     "icon.svg",

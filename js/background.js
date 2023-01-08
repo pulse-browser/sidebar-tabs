@@ -127,3 +127,24 @@ browser.runtime.onMessage.addListener(({ type, data }, sender) => {
 
   return null
 })
+
+// =============================================================================
+// Context Menu Logic
+
+const sidebartabs = browser.menus.create({
+  title: 'Add to Sidebar',
+  contexts: ['page'],
+  documentUrlPatterns: ['*://*/*'],
+})
+
+browser.menus.onClicked.addListener(function (info, tab) {
+  switch (info.menuItemId) {
+    case sidebartabs:
+      createSidebarItem({
+        title: tab.title,
+        iconUrl: tab.favIconUrl,
+        webviewUrl: tab.url,
+      })
+      break
+  }
+})
